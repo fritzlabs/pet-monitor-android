@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ai.fritz.core.Fritz;
 import ai.fritz.fritzvisionobjectmodel.FritzVisionObjectPredictor;
 import ai.fritz.fritzvisionobjectmodel.FritzVisionObjectPredictorOptions;
+import ai.fritz.fritzvisionobjectmodel.FritzVisionObjectResult;
 import ai.fritz.vision.FritzVisionLabel;
 import ai.fritz.vision.FritzVisionObject;
 import ai.fritz.vision.inputs.FritzVisionImage;
@@ -33,8 +34,6 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
 
     private AtomicBoolean computing = new AtomicBoolean(false);
 
-    private FritzVisionImage styledImage;
-
     private Toast toast;
 
     // STEP 1:
@@ -42,9 +41,7 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
     private FritzVisionObjectPredictor predictor;
     // END STEP 1
 
-    private Size cameraViewSize;
-
-    List<FritzVisionObject> visionObjects;
+    FritzVisionObjectResult result;
     FritzVisionImage visionImage;
 
     @Override
@@ -60,7 +57,7 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
         FritzVisionObjectPredictorOptions options = new FritzVisionObjectPredictorOptions.Builder()
                 .confidenceThreshold(.4f)
                 .build();
-        predictor = FritzVisionObjectPredictor.getInstance(this, options);
+        predictor = new FritzVisionObjectPredictor(options);
         // ----------------------------------------------
         // END STEP 1
 
@@ -80,8 +77,6 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
     public void onPreviewSizeChosen(final Size previewSize, final Size cameraViewSize, final int rotation) {
         Drawable drawable = getResources().getDrawable(R.drawable.ic_warning);
 
-        this.cameraViewSize = cameraViewSize;
-
         final List<String> filteredObjects = new ArrayList<>();
         filteredObjects.add("cat");
         filteredObjects.add("dog");
@@ -93,7 +88,7 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
                     public void drawCallback(final Canvas canvas) {
                         // STEP 4: Draw the prediction result
                         // ----------------------------------
-                        if (visionObjects == null) {
+                        if (result == null) {
                             return;
                         }
 
@@ -101,7 +96,7 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
                         boolean hasDog = false;
 
                         // Go through all results
-                        for (FritzVisionObject object : visionObjects) {
+                        for (FritzVisionObject object : result.getVisionObjects()) {
                             String labelText = object.getVisionLabel().getText();
 
                             // Only show results for dogs and cats
@@ -171,7 +166,7 @@ public class MainActivity extends BaseCameraActivity implements ImageReader.OnIm
                         // ---------------------------------------------------
                         // TODO: Add code for running prediction on the image
                         // final long startTime = SystemClock.uptimeMillis();
-                        visionObjects = predictor.predict(visionImage);
+                        result = predictor.predict(visionImage);
                         // ----------------------------------------------------
                         // END STEP 3
 
