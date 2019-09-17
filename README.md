@@ -1,5 +1,5 @@
 # Pet Monitor Android
-The Pet Monitor App on Android has been [moved](https://github.com/fritzlabs/handwriting-detector-app/pull/1).
+This project has [moved](https://github.com/fritzlabs/fritz-android-tutorials/tree/master/PetMonitoringApp).
 
 ## Fritz AI
 Fritz AI helps you teach your applications how to see, hear, feel, think, and sense. Create ML-powered features in your mobile apps for both Android and iOS. Start with our ready-to-use feature APIs or connect and deploy your own custom models.
